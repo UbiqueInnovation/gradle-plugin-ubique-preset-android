@@ -8,6 +8,7 @@ This gradle plugin applies a preset of configurations we use at Ubique to an And
 ## Preset configuration
 
 The following configurations are applied by this plugin:
+
 * A `default` flavor dimension is created
 * The `applicationIsSuffix` of each flavor (except `prod`) is set to `.{flavor}`
 * Enable the generation of the `BuildConfig` class
@@ -19,6 +20,13 @@ The following configurations are applied by this plugin:
 * Sets the Kotlin `jvmTarget` to Java 17
 * Sets the `isAbortOnError` flag of the `lintOptions` to false
 
+In addition to automatically applying a preset configuration, this plugin also provides a few utility functions for usage in build
+scripts:
+
+* Methods to read a property from either the project properties or a `local.properties` file in the module or project root
+    * `readProperty(propertyName)` for nullable properties
+    * `readPropertyWithDefault(propertyName, defaultValue)` for non-nullable properties
+
 ## Usage
 
 ```kotlin
@@ -27,5 +35,5 @@ plugins {
 }
 ```
 
-The major and minor version goes in lockstep with the Android Gradle Plugin, 
+The major and minor version goes in lockstep with the Android Gradle Plugin,
 also see [Releases](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/releases).
