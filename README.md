@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/actions/workflows/build.yml/badge.svg)](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/actions/workflows/build.yml)
 [![Release](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/actions/workflows/publish.yml/badge.svg)](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/actions/workflows/publish.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/ch.ubique.gradle/ubdiag-android.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22ch.ubique.gradle%22%20AND%20a:%22preset%22)
+[![Maven Central](https://img.shields.io/maven-central/v/ch.ubique.gradle/preset.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22ch.ubique.gradle%22%20AND%20a:%22preset%22)
 
 This gradle plugin applies a preset of configurations we use at Ubique to an Android project.
 
