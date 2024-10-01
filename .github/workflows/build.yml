@@ -19,4 +19,4 @@ jobs:
 
       # Run the Gradle Build task
       - name: Build Example App
-        run: ./gradlew clean :appexample:assemble -PubiqueMavenRootUrl=${{secrets.UB_ARTIFACTORY_URL}} -PubiqueMavenRepoName=${{secrets.UB_ARTIFACTORY_REPO_ANDROID}} -PubiqueMavenUser=${{secrets.UB_ARTIFACTORY_USER}} -PubiqueMavenPass=${{secrets.UB_ARTIFACTORY_PASSWORD}}
+        run: ./gradlew clean :appexample:assemble
