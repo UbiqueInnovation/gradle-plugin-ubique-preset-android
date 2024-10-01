@@ -3,7 +3,7 @@ name: Build Example
 on: [ push, workflow_dispatch ]
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
     steps:
       # Checkout repository
