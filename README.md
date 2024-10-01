@@ -1,7 +1,8 @@
 # Ubique Preset Gradle Plugin
 
 [![Build](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/actions/workflows/build.yml/badge.svg)](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/actions/workflows/build.yml)
-[![Gradle Plugin Portal](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/actions/workflows/publish.yml/badge.svg)](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/actions/workflows/publish.yml)
+[![Release](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/actions/workflows/publish.yml/badge.svg)](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/actions/workflows/publish.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/ch.ubique.gradle/ubdiag-android.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22ch.ubique.gradle%22%20AND%20a:%22preset%22)
 
 This gradle plugin applies a preset of configurations we use at Ubique to an Android project.
 
@@ -27,5 +28,12 @@ plugins {
 }
 ```
 
-The major and minor version goes in lockstep with the Android Gradle Plugin, 
+The major and minor version goes in lockstep with the Android Gradle Plugin,
 also see [Releases](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/releases).
+
+## Deployment
+
+Create a [Release](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/releases), 
+setting the Tag to the desired version prefixed with a `v`.
+
+Each release on Github will be deployed to Maven Central.
