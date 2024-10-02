@@ -16,5 +16,7 @@ dependencyResolutionManagement {
 	}
 }
 
+rootProject.name = "gradle-plugin-preset-android"
+
 include("appexample")
 includeBuild("preset")
