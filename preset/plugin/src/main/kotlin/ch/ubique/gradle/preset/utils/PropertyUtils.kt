@@ -8,19 +8,9 @@ import java.util.*
  *
  * @return The value of the property or null if it is not found
  */
-fun <T> Project.readProperty(propertyName: String) = readPropertyWithDefault<T?>(propertyName, null)
-
-/**
- * Read a property from the project properties or from a local.properties file
- *
- * @param propertyName The key of the property to be read
- * @param default The default value to be returned if the property is not found
- * @return The value of the property or the default value if it is not found
- */
-@Suppress("UNCHECKED_CAST")
-fun <T> Project.readPropertyWithDefault(propertyName: String, default: T): T {
+fun Project.readProperty(propertyName: String): String? {
 	if (this.hasProperty(propertyName)) {
-		return this.properties[propertyName] as T
+		return this.properties[propertyName] as? String?
 	} else {
 		val localPropertiesFileName = "local.properties"
 
@@ -32,9 +22,18 @@ fun <T> Project.readPropertyWithDefault(propertyName: String, default: T): T {
 		}
 
 		return if (properties.containsKey(propertyName)) {
-			properties.getProperty(propertyName) as T
+			properties.getProperty(propertyName)
 		} else {
-			default
+			null
 		}
 	}
 }
+
+/**
+ * Read a property from the project properties or from a local.properties file
+ *
+ * @param propertyName The key of the property to be read
+ * @param default The default value to be returned if the property is not found
+ * @return The value of the property or the default value if it is not found
+ */
+fun Project.readPropertyWithDefault(propertyName: String, default: String) = readProperty(propertyName) ?: default
