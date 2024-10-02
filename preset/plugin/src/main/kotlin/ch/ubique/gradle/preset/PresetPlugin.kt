@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 abstract class PresetPlugin : Plugin<Project> {
 
 	override fun apply(project: Project) {
-		val extension = project.extensions.create("presetPlugin", PresetPluginConfig::class.java, project)
+		val extension = project.extensions.create("ubiquePreset", PresetPluginConfig::class.java, project)
 
 		val androidExtension = getAndroidExtension(project)
 		val androidComponentExtension = getAndroidComponentsExtension(project)
