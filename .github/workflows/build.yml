@@ -3,7 +3,7 @@ name: Build Example
 on: [ push, workflow_dispatch ]
 
 jobs:
-  build:
+  build_app:
     runs-on: ubuntu-latest
     steps:
       # Checkout repository
@@ -20,3 +20,21 @@ jobs:
       # Run the Gradle Build task
       - name: Build Example App
         run: ./gradlew clean :appexample:assemble
+
+  build_lib:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout repository
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      # Setup JDK environment
+      - name: Set up JDK
+        uses: actions/setup-java@v4.3.0
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # Run the Gradle Build task
+      - name: Build Example Lib
+        run: ./gradlew clean :libexample:assemble

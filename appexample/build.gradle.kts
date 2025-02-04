@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	alias(libs.plugins.androidApplication)
-	alias(libs.plugins.kotlinAndroid)
+	alias(libs.plugins.android.application)
+	alias(libs.plugins.kotlin.android)
 	id("ch.ubique.gradle.preset")
 }
 

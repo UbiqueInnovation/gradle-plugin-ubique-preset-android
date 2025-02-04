@@ -1,8 +1,10 @@
 package ch.ubique.gradle.preset
 
 import ch.ubique.gradle.preset.config.PresetPluginConfig
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.gradle.AppExtension
+import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.ProguardFiles.getDefaultProguardFile
 import org.gradle.api.GradleException
 import org.gradle.api.JavaVersion
@@ -19,43 +21,11 @@ abstract class PresetPlugin : Plugin<Project> {
 		val androidExtension = getAndroidExtension(project)
 		val androidComponentExtension = getAndroidComponentsExtension(project)
 
+		// Apply presets specific to applications
+		(androidExtension as? ApplicationExtension)?.applyAppPreset(project)
+
 		// Enable BuildConfig
 		androidExtension.buildFeatures.buildConfig = true
-
-		// Default dimension
-		androidExtension.flavorDimensions("default")
-
-		// Add flavor boolean fields to BuildConfig
-		androidExtension.productFlavors.configureEach { flavor ->
-			val sanitizedFlavorName = flavor.name.replace("[^a-zA-Z0-9_]", "_")
-
-			// default flavor dimension
-			flavor.dimension = "default"
-
-			// default application id suffix
-			flavor.applicationIdSuffix = when (flavor.name) {
-				"prod", "production" -> null
-				else -> ".$sanitizedFlavorName"
-			}
-
-			// flavor BuildConfig flag
-			val flavorFieldName = "IS_FLAVOR_${sanitizedFlavorName.uppercase()}"
-			// true for this flavor ...
-			flavor.buildConfigField("boolean", flavorFieldName, "true")
-			// ... false for all others
-			androidExtension.defaultConfig.buildConfigField("boolean", flavorFieldName, "false")
-		}
-
-		// Release build config
-		androidExtension.buildTypes.maybeCreate("release").apply {
-			isMinifyEnabled = true
-			proguardFiles(getDefaultProguardFile("proguard-android.txt", project.layout.buildDirectory), "proguard-rules.pro")
-		}
-
-		// R8 full mode check
-		if (project.findProperty("android.enableR8.fullMode") != "false" && project.findProperty("android.enableR8.fullModeAllowed") != "true") {
-			throw IllegalArgumentException("R8 full mode is enabled. Disable it with android.enableR8.fullMode=false or allow it by setting android.enableR8.fullModeAllowed=true")
-		}
 
 		// Exclude library version files on release builds
 		androidComponentExtension.onVariants { variant ->
@@ -81,9 +51,10 @@ abstract class PresetPlugin : Plugin<Project> {
 		androidExtension.lintOptions.isAbortOnError = false
 	}
 
-	private fun getAndroidExtension(project: Project): AppExtension {
-		val ext = project.extensions.findByType(AppExtension::class.java)
-			?: throw GradleException("Android gradle plugin extension has not been applied before")
+	private fun getAndroidExtension(project: Project): BaseExtension {
+		val ext = project.extensions.findByType(BaseExtension::class.java)
+			?.takeIf { it is ApplicationExtension || it is LibraryExtension }
+			?: throw GradleException("Android gradle plugin (application or library) extension has not been applied before")
 		return ext
 	}
 
@@ -91,6 +62,43 @@ abstract class PresetPlugin : Plugin<Project> {
 		val ext = project.extensions.findByType(AndroidComponentsExtension::class.java)
 			?: throw GradleException("Android gradle plugin extension has not been applied before")
 		return ext
+	}
+
+	private fun ApplicationExtension.applyAppPreset(project: Project) {
+		// Default dimension
+		flavorDimensions += "default"
+
+		// Add flavor boolean fields to BuildConfig
+		productFlavors.configureEach { flavor ->
+			val sanitizedFlavorName = flavor.name.replace("[^a-zA-Z0-9_]", "_")
+
+			// default flavor dimension
+			flavor.dimension = "default"
+
+			// default application id suffix
+			flavor.applicationIdSuffix = when (flavor.name) {
+				"prod", "production" -> null
+				else -> ".$sanitizedFlavorName"
+			}
+
+			// flavor BuildConfig flag
+			val flavorFieldName = "IS_FLAVOR_${sanitizedFlavorName.uppercase()}"
+			// true for this flavor ...
+			flavor.buildConfigField("boolean", flavorFieldName, "true")
+			// ... false for all others
+			defaultConfig.buildConfigField("boolean", flavorFieldName, "false")
+		}
+
+		// Release build config
+		buildTypes.maybeCreate("release").apply {
+			isMinifyEnabled = true
+			proguardFiles(getDefaultProguardFile("proguard-android.txt", project.layout.buildDirectory), "proguard-rules.pro")
+		}
+
+		// R8 full mode check
+		if (project.findProperty("android.enableR8.fullMode") != "false" && project.findProperty("android.enableR8.fullModeAllowed") != "true") {
+			throw IllegalArgumentException("R8 full mode is enabled. Disable it with android.enableR8.fullMode=false or allow it by setting android.enableR8.fullModeAllowed=true")
+		}
 	}
 
 }
