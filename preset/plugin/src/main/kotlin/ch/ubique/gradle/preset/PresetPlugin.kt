@@ -27,11 +27,6 @@ abstract class PresetPlugin : Plugin<Project> {
 		// Enable BuildConfig
 		androidExtension.buildFeatures.buildConfig = true
 
-		// R8 full mode check
-		if (project.findProperty("android.enableR8.fullMode") != "false" && project.findProperty("android.enableR8.fullModeAllowed") != "true") {
-			throw IllegalArgumentException("R8 full mode is enabled. Disable it with android.enableR8.fullMode=false or allow it by setting android.enableR8.fullModeAllowed=true")
-		}
-
 		// Exclude library version files on release builds
 		androidComponentExtension.onVariants { variant ->
 			if (variant.buildType == "release") {
@@ -98,6 +93,11 @@ abstract class PresetPlugin : Plugin<Project> {
 		buildTypes.maybeCreate("release").apply {
 			isMinifyEnabled = true
 			proguardFiles(getDefaultProguardFile("proguard-android.txt", project.layout.buildDirectory), "proguard-rules.pro")
+		}
+
+		// R8 full mode check
+		if (project.findProperty("android.enableR8.fullMode") != "false" && project.findProperty("android.enableR8.fullModeAllowed") != "true") {
+			throw IllegalArgumentException("R8 full mode is enabled. Disable it with android.enableR8.fullMode=false or allow it by setting android.enableR8.fullModeAllowed=true")
 		}
 	}
 
