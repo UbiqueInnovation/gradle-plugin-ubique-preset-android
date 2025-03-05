@@ -32,7 +32,7 @@ scripts:
 
 ```kotlin
 plugins {
-	id("ch.ubique.gradle.preset") version "8.7.0"
+	id("ch.ubique.gradle.preset") version "8.9.0"
 }
 ```
 
