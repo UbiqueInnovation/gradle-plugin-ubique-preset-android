@@ -40,8 +40,11 @@ abstract class PresetPlugin : Plugin<Project> {
 			targetCompatibility = JavaVersion.VERSION_17
 		}
 
-		// Let Kotlin target JVM 17
 		project.tasks.withType(KotlinCompile::class.java) { task ->
+			// Annotation targets (Kotlin 2.2+) https://github.com/Kotlin/KEEP/blob/change-defaulting-rule/proposals/annotation-target-in-properties.md
+			task.compilerOptions.freeCompilerArgs.add("-Xannotation-default-target=param-property")
+
+			// Let Kotlin target JVM 17
 			task.compilerOptions.jvmTarget.set(JvmTarget.JVM_17) // Kotlin 1.8+
 			@Suppress("DEPRECATION")
 			task.kotlinOptions.jvmTarget = "17" // Deprecated since Kotlin 1.8

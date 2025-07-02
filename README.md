@@ -19,6 +19,7 @@ The following configurations are applied by this plugin:
 * Excludes `META-INF/*.version` packaging resources from `release` builds
 * Sets the `sourceCompatibility` and `targetCompatibility` to Java 17
 * Sets the Kotlin `jvmTarget` to Java 17
+* Sets the Kotlin compiler flag `-Xannotation-default-target=param-property`
 * Sets the `isAbortOnError` flag of the `lintOptions` to false
 
 In addition to automatically applying a preset configuration, this plugin also provides a few utility functions for usage in build
@@ -32,7 +33,7 @@ scripts:
 
 ```kotlin
 plugins {
-	id("ch.ubique.gradle.preset") version "8.10.0"
+	id("ch.ubique.gradle.preset") version "8.11.0"
 }
 ```
 
