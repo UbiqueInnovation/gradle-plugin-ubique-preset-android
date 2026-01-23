@@ -11,7 +11,7 @@ This gradle plugin applies a preset of configurations we use at Ubique to an And
 The following configurations are applied by this plugin:
 
 * A `default` flavor dimension is created
-* The `applicationIsSuffix` of each flavor (except `prod`) is set to `.{flavor}`
+* The `applicationIdSuffix` of each flavor (except `prod`) is set to `.{flavor}`
 * Enable the generation of the `BuildConfig` class
 * Adds a boolean flag `IS_FLAVOR_<FLAVOR_NAME>` to the `BuildConfig` for each flavor
 * Configures the `release` buildType to enable ProGuard
@@ -20,7 +20,7 @@ The following configurations are applied by this plugin:
 * Sets the `sourceCompatibility` and `targetCompatibility` to Java 17
 * Sets the Kotlin `jvmTarget` to Java 17
 * Sets the Kotlin compiler flag `-Xannotation-default-target=param-property`
-* Sets the `isAbortOnError` flag of the `lintOptions` to false
+* Sets the `abortOnError` flag of the `lint` options to false
 
 In addition to automatically applying a preset configuration, this plugin also provides a few utility functions for usage in build
 scripts:
@@ -33,7 +33,7 @@ scripts:
 
 ```kotlin
 plugins {
-	id("ch.ubique.gradle.preset") version "8.13.0"
+	id("ch.ubique.gradle.preset") version "9.0.0"
 }
 ```
 
