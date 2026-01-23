@@ -1,16 +1,16 @@
 plugins {
-    alias(libs.plugins.android.library)
-    id("ch.ubique.gradle.preset")
+	alias(libs.plugins.android.library)
+	id("ch.ubique.gradle.preset")
 }
 
 android {
-    namespace = "ch.ubique.preset.example"
-    compileSdk = 36
+	namespace = "ch.ubique.preset.example"
+	compileSdk = 36
 
-    defaultConfig {
-        minSdk = 26
+	defaultConfig {
+		minSdk = 26
 		testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
-    }
+	}
 }
 
 dependencies {

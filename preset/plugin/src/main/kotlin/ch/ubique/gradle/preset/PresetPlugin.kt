@@ -5,6 +5,8 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.ProguardFiles.getDefaultProguardFile
 import org.gradle.api.GradleException
 import org.gradle.api.JavaVersion
@@ -96,8 +98,9 @@ abstract class PresetPlugin : Plugin<Project> {
 	}
 
 	private fun Project.getAndroidComponentsExtension(): AndroidComponentsExtension<*, *, *> {
-		return extensions.findByType(AndroidComponentsExtension::class.java)
-			?: throw GradleException("Android Gradle Plugin has not been applied before")
+		return extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
+			?: extensions.findByType(LibraryAndroidComponentsExtension::class.java)
+			?: throw GradleException("Android Gradle Plugin (application or library) has not been applied before")
 	}
 
 }
