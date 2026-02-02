@@ -2,9 +2,11 @@ package ch.ubique.gradle.preset
 
 import ch.ubique.gradle.preset.config.PresetPluginConfig
 import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.gradle.BaseExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.ProguardFiles.getDefaultProguardFile
 import org.gradle.api.GradleException
 import org.gradle.api.JavaVersion
@@ -18,8 +20,8 @@ abstract class PresetPlugin : Plugin<Project> {
 	override fun apply(project: Project) {
 		val extension = project.extensions.create("ubiquePreset", PresetPluginConfig::class.java, project)
 
-		val androidExtension = getAndroidExtension(project)
-		val androidComponentExtension = getAndroidComponentsExtension(project)
+		val androidExtension = project.getAndroidExtension()
+		val androidComponentExtension = project.getAndroidComponentsExtension()
 
 		// Apply presets specific to applications
 		(androidExtension as? ApplicationExtension)?.applyAppPreset(project)
@@ -45,26 +47,11 @@ abstract class PresetPlugin : Plugin<Project> {
 			task.compilerOptions.freeCompilerArgs.add("-Xannotation-default-target=param-property")
 
 			// Let Kotlin target JVM 17
-			task.compilerOptions.jvmTarget.set(JvmTarget.JVM_17) // Kotlin 1.8+
-			@Suppress("DEPRECATION")
-			task.kotlinOptions.jvmTarget = "17" // Deprecated since Kotlin 1.8
+			task.compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
 		}
 
 		// Lint settings
-		androidExtension.lintOptions.isAbortOnError = false
-	}
-
-	private fun getAndroidExtension(project: Project): BaseExtension {
-		val ext = project.extensions.findByType(BaseExtension::class.java)
-			?.takeIf { it is ApplicationExtension || it is LibraryExtension }
-			?: throw GradleException("Android gradle plugin (application or library) extension has not been applied before")
-		return ext
-	}
-
-	private fun getAndroidComponentsExtension(project: Project): AndroidComponentsExtension<*, *, *> {
-		val ext = project.extensions.findByType(AndroidComponentsExtension::class.java)
-			?: throw GradleException("Android gradle plugin extension has not been applied before")
-		return ext
+		androidExtension.lint.abortOnError = false
 	}
 
 	private fun ApplicationExtension.applyAppPreset(project: Project) {
@@ -95,13 +82,25 @@ abstract class PresetPlugin : Plugin<Project> {
 		// Release build config
 		buildTypes.maybeCreate("release").apply {
 			isMinifyEnabled = true
-			proguardFiles(getDefaultProguardFile("proguard-android.txt", project.layout.buildDirectory), "proguard-rules.pro")
+			proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt", project.layout.buildDirectory), "proguard-rules.pro")
 		}
 
 		// R8 full mode check
-		if (project.findProperty("android.enableR8.fullMode") != "false" && project.findProperty("android.enableR8.fullModeAllowed") != "true") {
+		if (project.findProperty("android.enableR8.fullMode") !in setOf("true", "false") && project.findProperty("android.enableR8.fullModeAllowed") != "true") {
 			throw IllegalArgumentException("R8 full mode is enabled. Disable it with android.enableR8.fullMode=false or allow it by setting android.enableR8.fullModeAllowed=true")
 		}
+	}
+
+	private fun Project.getAndroidExtension(): CommonExtension {
+		return extensions.findByType(ApplicationExtension::class.java)
+			?: extensions.findByType(LibraryExtension::class.java)
+			?: throw GradleException("Android Gradle Plugin (application or library) has not been applied before")
+	}
+
+	private fun Project.getAndroidComponentsExtension(): AndroidComponentsExtension<*, *, *> {
+		return extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
+			?: extensions.findByType(LibraryAndroidComponentsExtension::class.java)
+			?: throw GradleException("Android Gradle Plugin (application or library) has not been applied before")
 	}
 
 }

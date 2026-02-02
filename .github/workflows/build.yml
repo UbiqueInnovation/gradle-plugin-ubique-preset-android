@@ -19,7 +19,7 @@ jobs:
 
       # Run the Gradle Build task
       - name: Build Example App
-        run: ./gradlew clean :appexample:assemble
+        run: ./gradlew clean :exampleApp:assemble
 
   build_lib:
     runs-on: ubuntu-latest
@@ -37,4 +37,4 @@ jobs:
 
       # Run the Gradle Build task
       - name: Build Example Lib
-        run: ./gradlew clean :libexample:assemble
+        run: ./gradlew clean :exampleLib:assemble

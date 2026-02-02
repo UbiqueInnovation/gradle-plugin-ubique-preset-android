@@ -1,7 +1,7 @@
 package ch.ubique.gradle.preset.utils
 
 import org.gradle.api.Project
-import java.util.*
+import java.util.Properties
 
 /**
  * Read a property from the project properties or from a local.properties file
