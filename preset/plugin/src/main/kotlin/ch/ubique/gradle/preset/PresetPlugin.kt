@@ -19,6 +19,7 @@ abstract class PresetPlugin : Plugin<Project> {
 
 	override fun apply(project: Project) {
 		val extension = project.extensions.create("ubiquePreset", PresetPluginConfig::class.java, project)
+		val jdkVersion = extension.jdkVersion.getOrElse(17)
 
 		val androidExtension = project.getAndroidExtension()
 		val androidComponentExtension = project.getAndroidComponentsExtension()
@@ -38,8 +39,10 @@ abstract class PresetPlugin : Plugin<Project> {
 
 		// Compile with Java 17 compatibility
 		androidExtension.compileOptions.apply {
-			sourceCompatibility = JavaVersion.VERSION_17
-			targetCompatibility = JavaVersion.VERSION_17
+			getJavaVersion(jdkVersion).let {
+				sourceCompatibility = it
+				targetCompatibility = it
+			}
 		}
 
 		project.tasks.withType(KotlinCompile::class.java) { task ->
@@ -47,7 +50,7 @@ abstract class PresetPlugin : Plugin<Project> {
 			task.compilerOptions.freeCompilerArgs.add("-Xannotation-default-target=param-property")
 
 			// Let Kotlin target JVM 17
-			task.compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
+			task.compilerOptions.jvmTarget.set(getJvmTarget(jdkVersion))
 		}
 
 		// Lint settings
@@ -101,6 +104,24 @@ abstract class PresetPlugin : Plugin<Project> {
 		return extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
 			?: extensions.findByType(LibraryAndroidComponentsExtension::class.java)
 			?: throw GradleException("Android Gradle Plugin (application or library) has not been applied before")
+	}
+
+	private fun getJavaVersion(version: Int) = when (version) {
+		in 1..10 -> throw IllegalArgumentException("Java version $version is too old")
+		11 -> JavaVersion.VERSION_11
+		17 -> JavaVersion.VERSION_17
+		21 -> JavaVersion.VERSION_21
+		25 -> JavaVersion.VERSION_25
+		else -> throw IllegalArgumentException("Unsupported Java version: $version (only LTS versions are supported)")
+	}
+
+	private fun getJvmTarget(version: Int) = when (version) {
+		in 1..10 -> throw IllegalArgumentException("Java version $version is too old")
+		11 -> JvmTarget.JVM_11
+		17 -> JvmTarget.JVM_17
+		21 -> JvmTarget.JVM_21
+		// JvmTarget.JVM_25 does not exist yet...
+		else -> throw IllegalArgumentException("Unsupported Java version: $version (only LTS versions are supported)")
 	}
 
 }
