@@ -29,16 +29,24 @@ scripts:
     * `readProperty(propertyName)` for nullable properties
     * `readPropertyWithDefault(propertyName, defaultValue)` for non-nullable properties
 
-## Usage
+## Configuration
 
 ```kotlin
 plugins {
-	id("ch.ubique.gradle.preset") version "9.2.0"
+	id("ch.ubique.gradle.preset") version "9.2.1"
 }
 ```
 
 The major and minor version goes in lockstep with the Android Gradle Plugin,
 also see [Releases](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/releases).
+
+After applying the plugin to your project, you can set the following configuration in your build.gradle.kts:
+
+```kotlin
+ubiquePreset {
+	jdkVersion = 17 // Configure the JDK version to use as a preset. Note that only LTS versions are supported
+}
+```
 
 ## Deployment
 
