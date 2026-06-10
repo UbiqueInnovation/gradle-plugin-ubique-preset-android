@@ -34,7 +34,3 @@ dependencies {
 	implementation(libs.androidx.appcompat)
 	implementation(libs.androidx.lifecycle.viewmodelKtx)
 }
-
-ubiquePreset {
-	jdkVersion = 17
-}
