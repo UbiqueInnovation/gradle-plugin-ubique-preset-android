@@ -12,22 +12,37 @@ import org.gradle.api.GradleException
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.internal.cc.base.logger
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 abstract class PresetPlugin : Plugin<Project> {
 
+	private companion object {
+		private const val DEFAULT_JDK_VERSION = 21
+	}
+
 	override fun apply(project: Project) {
 		val extension = project.extensions.create("ubiquePreset", PresetPluginConfig::class.java, project)
 
+		val jdkVersion = project.findProperty("ubique.preset.jdkVersion")?.toString()?.toIntOrNull() ?: run {
+			logger.info("Project specified no JDK version in its gradle.properties. Using default JDK version: $DEFAULT_JDK_VERSION")
+			DEFAULT_JDK_VERSION
+		}
+
+		val kotlinExtension = project.getKotlinExtension()
 		val androidExtension = project.getAndroidExtension()
 		val androidComponentExtension = project.getAndroidComponentsExtension()
 
+		// Apply presets to Kotlin projects
+		kotlinExtension.applyPreset(project, jdkVersion)
+
+		// Apply presets common to both applications and libraries
+		androidExtension.applyAndroidBasePreset(project, jdkVersion)
+
 		// Apply presets specific to applications
 		(androidExtension as? ApplicationExtension)?.applyAppPreset(project)
-
-		// Enable BuildConfig
-		androidExtension.buildFeatures.buildConfig = true
 
 		// Exclude library version files on release builds
 		androidComponentExtension.onVariants { variant ->
@@ -35,23 +50,36 @@ abstract class PresetPlugin : Plugin<Project> {
 				variant.packaging.resources.excludes.add("META-INF/*.version")
 			}
 		}
+	}
 
-		// Compile with Java 17 compatibility
-		androidExtension.compileOptions.apply {
-			sourceCompatibility = JavaVersion.VERSION_17
-			targetCompatibility = JavaVersion.VERSION_17
+	private fun KotlinProjectExtension.applyPreset(project: Project, jdkVersion: Int) {
+		// Set the JVM toolchain to the configured JDK version
+		jvmToolchain(jdkVersion)
+	}
+
+	private fun CommonExtension.applyAndroidBasePreset(project: Project, jdkVersion: Int) {
+		// Enable BuildConfig
+		buildFeatures.buildConfig = true
+
+		// Set source and target compatibility to the configured JDK version
+		compileOptions.apply {
+			getJavaVersion(jdkVersion).let {
+				sourceCompatibility = it
+				targetCompatibility = it
+			}
 		}
 
+		// Lint settings
+		lint.abortOnError = false
+
+		// Set JvmTarget to the configured JDK version
 		project.tasks.withType(KotlinCompile::class.java) { task ->
 			// Annotation targets (Kotlin 2.2+) https://github.com/Kotlin/KEEP/blob/change-defaulting-rule/proposals/annotation-target-in-properties.md
 			task.compilerOptions.freeCompilerArgs.add("-Xannotation-default-target=param-property")
 
 			// Let Kotlin target JVM 17
-			task.compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
+			task.compilerOptions.jvmTarget.set(getJvmTarget(jdkVersion))
 		}
-
-		// Lint settings
-		androidExtension.lint.abortOnError = false
 	}
 
 	private fun ApplicationExtension.applyAppPreset(project: Project) {
@@ -91,6 +119,11 @@ abstract class PresetPlugin : Plugin<Project> {
 		}
 	}
 
+	private fun Project.getKotlinExtension(): KotlinProjectExtension {
+		return extensions.findByType(KotlinProjectExtension::class.java)
+			?: throw GradleException("Kotlin Gradle Plugin has not been applied before")
+	}
+
 	private fun Project.getAndroidExtension(): CommonExtension {
 		return extensions.findByType(ApplicationExtension::class.java)
 			?: extensions.findByType(LibraryExtension::class.java)
@@ -101,6 +134,24 @@ abstract class PresetPlugin : Plugin<Project> {
 		return extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
 			?: extensions.findByType(LibraryAndroidComponentsExtension::class.java)
 			?: throw GradleException("Android Gradle Plugin (application or library) has not been applied before")
+	}
+
+	private fun getJavaVersion(version: Int) = when (version) {
+		in 1..10 -> throw IllegalArgumentException("Java version $version is too old")
+		11 -> JavaVersion.VERSION_11
+		17 -> JavaVersion.VERSION_17
+		21 -> JavaVersion.VERSION_21
+		25 -> JavaVersion.VERSION_25
+		else -> throw IllegalArgumentException("Unsupported Java version: $version (only LTS versions are supported)")
+	}
+
+	private fun getJvmTarget(version: Int) = when (version) {
+		in 1..10 -> throw IllegalArgumentException("Java version $version is too old")
+		11 -> JvmTarget.JVM_11
+		17 -> JvmTarget.JVM_17
+		21 -> JvmTarget.JVM_21
+		// JvmTarget.JVM_25 does not exist yet...
+		else -> throw IllegalArgumentException("Unsupported Java version: $version (only LTS versions are supported)")
 	}
 
 }
