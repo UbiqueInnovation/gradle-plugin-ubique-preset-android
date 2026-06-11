@@ -27,7 +27,7 @@ abstract class PresetPlugin : Plugin<Project> {
 		val extension = project.extensions.create("ubiquePreset", PresetPluginConfig::class.java, project)
 
 		val jdkVersion = project.findProperty("ubique.preset.jdkVersion")?.toString()?.toIntOrNull() ?: run {
-			logger.lifecycle("Project specified no JDK version in its gradle.properties. Using default JDK version: $DEFAULT_JDK_VERSION")
+			logger.info("Project specified no JDK version in its gradle.properties. Using default JDK version: $DEFAULT_JDK_VERSION")
 			DEFAULT_JDK_VERSION
 		}
 
