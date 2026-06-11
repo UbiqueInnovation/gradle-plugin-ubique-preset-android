@@ -17,6 +17,9 @@ The following configurations are applied by this plugin:
 * Configures the `release` buildType to enable ProGuard
 * Ensures that R8 full mode is either disabled or explicitly enabled
 * Excludes `META-INF/*.version` packaging resources from `release` builds
+* Sets the `sourceCompatibility` and `targetCompatibility` to Java 21 (or the configured Gradle property)
+* Sets the Kotlin `jvmTarget` to Java 21 (or the configured Gradle property)
+* Sets the Kotlin `jvmToolchain` to Java 21 (or the configured Gradle property)
 * Sets the Kotlin compiler flag `-Xannotation-default-target=param-property`
 * Sets the `abortOnError` flag of the `lint` options to false
 
@@ -38,18 +41,10 @@ plugins {
 The major and minor version goes in lockstep with the Android Gradle Plugin,
 also see [Releases](https://github.com/UbiqueInnovation/gradle-plugin-ubique-preset-android/releases).
 
-## Migrations
-
-### Plugin version 9.2.1
-
-In version 9.2.1, the preset plugin no longer sets the `sourceCompatibility`, `targetCompatibility` and `jvmTarget` fields.
-Applications and libraries should set these fields explicitly as follows:
-
+### Configuration
+To configure the Java version used, set the following Gradle property. Note that only LTS versions are supported
 ```kotlin
-// In your build.gradle.kts
-kotlin {
-	jvmToolchain(17) // In AGP 8.1.0+, this automatically sets the sourceCompatibility and targetCompatibility
-}
+ubique.preset.jdkVersion=21
 ```
 
 ## Deployment
