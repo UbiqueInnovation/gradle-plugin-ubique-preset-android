@@ -34,7 +34,7 @@ scripts:
 
 ```kotlin
 plugins {
-	id("ch.ubique.gradle.preset") version "9.2.0"
+	id("ch.ubique.gradle.preset") version "9.3.0"
 }
 ```
 
