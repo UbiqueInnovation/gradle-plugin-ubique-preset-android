@@ -13,6 +13,7 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.internal.cc.base.logger
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -71,6 +72,7 @@ abstract class PresetPlugin : Plugin<Project> {
 
 		// Lint settings
 		lint.abortOnError = false
+		lint.toolchain.languageVersion.set(JavaLanguageVersion.of(jdkVersion))
 
 		// Set JvmTarget to the configured JDK version
 		project.tasks.withType(KotlinCompile::class.java) { task ->
